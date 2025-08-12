@@ -21,9 +21,11 @@ motor LR = motor(vex::PORT20, gearSetting::ratio6_1, true);
 motor RF = motor(vex::PORT1, gearSetting::ratio6_1, false);
 motor RM = motor(vex::PORT5, gearSetting::ratio6_1, false);
 motor RR = motor(vex::PORT10, gearSetting::ratio6_1, false);
-motor IM = motor(vex::PORT4, gearSetting::ratio6_1, false);
+motor LI = motor(vex::PORT3, gearSetting::ratio6_1, false);
+motor UI = motor(vex::PORT4, gearSetting::ratio6_1, false);
 digital_out tounge = digital_out(Brain.ThreeWirePort.H);
-
+inertial Inertial1 = inertial(vex::PORT1);
+inertial Inertial2 = inertial(vex::PORT2);
 
 
 // define your global instances of motors and other devices here
@@ -92,17 +94,24 @@ void usercontrol(void) {
 
     //intake controlls
     if(Controller.ButtonR1.pressing()){
-      IM.spin(fwd, 100, pct);
+      LI.spin(fwd, 100, pct);
+      UI.spin(fwd, 100, pct);
+    }
+    else if(Controller.ButtonR2.pressing()){
+      LI.spin(reverse, 100, pct);
+      UI.spin(reverse, 100, pct);
     }
     else if(Controller.ButtonL1.pressing()){
-      IM.spin(reverse, 100, pct);
+      LI.spin(fwd, 100, pct);
+      UI.spin(reverse, 100, pct);
     }
     else{
-      IM.stop(brake);
+      LI.stop(brake);
+      UI.stop(brake);
     }
 
     //tounge controlls
-    Controller.ButtonR2.pressed(toggle_tounge);
+    Controller.ButtonL2.pressed(toggle_tounge);
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
