@@ -112,6 +112,7 @@ void turn(float degrees)
         if(output<-30) output = -30;
         spin_motorsT(output);
         // prev_error = error;
+
     }
     stop_motors();
 }
@@ -135,7 +136,44 @@ void turn_heading(float degrees)
     }
     stop_motors();
 }
-void arcTurn(float distance, float left, float right, float speed){
+void arcTurn(float radius, float angle, bool direction, float speed){
+    float Kp = 0.1;
+    float Ki = 0.01;
+
+    float degPerRotation = (360 / (M_PI * 3.25)) * (3.0 / 4.0);
+    printf("deg per rotation: %f\n", degPerRotation);
+    
+    LF.resetPosition();
+    RF.resetPosition();
+
+    float ArcLength = (2 * M_PI * radius) * (angle/360); 
+    float leftDistance;
+    float rightDistance;
+    if(direction){//left
+       float leftDistance = (2 * M_PI * (radius - 6)) * (angle/360); 
+       float rightDistance = (2 * M_PI * (radius + 6)) * (angle/360);
+    }
+    if(!direction){//right
+        float leftDistance = (2 * M_PI * (radius + 6)) * (angle/360); 
+        float rightDistance = (2 * M_PI * (radius - 6)) * (angle/360);
+    }
+    float leftError;
+    float rightError;
+    do{
+       float leftError = leftDistance - LF.position(vex::deg);
+       float rightError = rightDistance - RF.position(vex::deg);
+       float leftOutput = leftError * Kp;
+       float rightOutput = rightError * Kp;
+
+       if(leftOutput > speed) leftOutput = speed;
+       if(leftOutput < -speed) leftOutput = -speed;
+       if(rightOutput > speed) leftOutput = speed;
+       if(rightOutput < -speed) rightOutput = -speed;
+       
+       leftSide(leftOutput);
+       rightSide(rightOutput);
+    }while(fabs(leftError) && fabs(rightError));
+
     // float degPerRotation = (360 / (M_PI * 3.25)) * (3.0 / 4.0);
     // printf("deg per rotation: %f\n", degPerRotation);
     // float targetRotation = distance * degPerRotation;
@@ -169,10 +207,7 @@ void arcTurn(float distance, float left, float right, float speed){
     //     // prev_error = error;
     // } while (fabs(error) > 1.7);
     // stop_motors();
-    do
-    {
-        
-    } while (1);
+    
     
 
 }
