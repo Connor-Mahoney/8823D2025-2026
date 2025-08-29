@@ -71,8 +71,15 @@ void autonomous(void) {
 /*                                                                           */
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
+bool sdiybt = 0;
 void toggle_tounge(){
   tounge.set(!tounge.value());
+}
+void toggle_intake(){
+  sdiybt = 1;
+}
+void toggle_intake2(){
+  sdiybt = 0;
 }
 //giughiuhi
 void usercontrol(void) {
@@ -93,6 +100,12 @@ void usercontrol(void) {
     RR.setStopping(brake);
 
     //intake controlls
+    Controller.ButtonR1.pressed(toggle_intake);
+    Controller.ButtonR2.pressed(toggle_intake2);
+    if(sdiybt){
+      LI.spin(fwd, 25, pct);
+      UI.spin(fwd, 15, pct);
+    }
     if(Controller.ButtonR1.pressing()){
       LI.spin(fwd, 100, pct);
       UI.spin(fwd, 100, pct);
@@ -100,14 +113,19 @@ void usercontrol(void) {
     else if(Controller.ButtonR2.pressing()){
       LI.spin(reverse, 100, pct);
       UI.spin(reverse, 100, pct);
+      
     }
     else if(Controller.ButtonL1.pressing()){
       LI.spin(fwd, 100, pct);
       UI.spin(reverse, 100, pct);
+      
     }
     else{
-      LI.stop(brake);
-      UI.stop(brake);
+      UI.spin(fwd, 10, pct);
+      if(!sdiybt){
+        UI.stop(brake);
+        LI.stop(brake);
+      }
     }
 
     //tounge controlls
