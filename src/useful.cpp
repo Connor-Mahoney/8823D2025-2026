@@ -58,13 +58,7 @@ void drive(float inches, float speed)
     printf("target rotation: %f\n", targetRotation);
     LF.resetPosition();
     RF.resetPosition();
-    /*
-    LF.spinFor(forward, a * 360, deg, speed, velocityUnits::pct);
-    LM.spinFor(forward, a * 360, deg, speed, velocityUnits::pct);
-    LR.spinFor(forward, a * 360, deg, speed, velocityUnits::pct);
-    RF.spinFor(forward, a * 360, deg, speed, velocityUnits::pct);
-    RM.spinFor(forward, a * 360, deg, speed, velocityUnits::pct);
-    RF.spinFor(forward, a * 360, deg, speed, velocityUnits::pct); */
+    
     float kp = 0.07;
     float ki = 0.013;
     float error;
