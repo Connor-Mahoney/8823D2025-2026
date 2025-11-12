@@ -81,6 +81,13 @@ void pre_auton(void)
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
+void intakeBasket(float speed);
+void outtake(float speed);
+void scoreHigh(float speed);
+void scoreMiddle(float speed);
+void stopIntake();
+
+
 void autonomous(void)
 {
   if (baleft)
@@ -143,7 +150,7 @@ void autonomous(void)
 /*                                                                           */
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
-bool sdiybt = 0;
+bool sdiybt = 1;
 void a()
 {
   baleft = 1;
@@ -165,14 +172,37 @@ void toggle_tounge()
   tounge.set(!tounge.value());
   toungeR.set(!tounge.value());
 }
+void intakeBasket(float speed){
+  Intake.spin(fwd, speed, pct);
+  middleRoller.spin(fwd, speed, pct);
+  topRoller.spin(fwd, speed, pct);
+}
+void outtake(float speed){
+  Intake.spin(reverse, speed, pct);
+  middleRoller.spin(reverse);
+  topRoller.spin(reverse, speed, pct);
+}
+void scoreHigh(float speed){
+  Intake.spin(fwd, speed, pct);
+  middleRoller.spin(fwd, speed, pct);
+  topRoller.spin(reverse, speed, pct);
+
+}
+void scoreMiddle(float speed){
+  Intake.spin(fwd, speed, pct);
+  middleRoller.spin(reverse, speed, pct);
+  topRoller.spin(fwd, speed, pct);
+}
+void stopIntake(){
+  Intake.stop();
+  middleRoller.stop();
+  topRoller.stop();
+}
 void toggle_intake()
 {
-  sdiybt = 1;
+  sdiybt = 1 - sdiybt;
 }
-void toggle_intake2()
-{
-  sdiybt = 0;
-}
+
 // giughiuhi
 void usercontrol(void)
 {
@@ -181,6 +211,7 @@ void usercontrol(void)
   {
     Controller.ButtonA.pressed(a);
     Controller.ButtonB.pressed(b);
+    Controller.ButtonX.pressed(toggle_intake);
 
     LF.spin(fwd, Controller.Axis3.value() + Controller.Axis1.value() * .5067, pct);
     LM.spin(fwd, Controller.Axis3.value() + Controller.Axis1.value() * .5067, pct);
@@ -197,42 +228,41 @@ void usercontrol(void)
     RR.setStopping(brake);
 
     // intake controlls
-    Controller.ButtonR1.pressed(toggle_intake);
-    Controller.ButtonR2.pressed(toggle_intake2);
-    // if (sdiybt)
-    // {
-    //   LI.spin(fwd, 25, pct);
-    //   UI.spin(fwd, 15, pct);
-    // }
+    
+    if(sdiybt){
+      Controller.Screen.setCursor(3, 1);
+      Controller.Screen.clearLine();
+      Controller.Screen.print("score top goal");
+    }
+
+    if(!sdiybt){
+      Controller.Screen.setCursor(3, 1);
+      Controller.Screen.clearLine();
+      Controller.Screen.print("score middle goal");
+    }
+
     if (Controller.ButtonR1.pressing())
     {
       // LI.spin(fwd, 100, pct);
       // UI.spin(fwd, 100, pct);
-      Intake.spin(fwd, 100, pct);
-      middleRoller.spin(fwd, 100, pct);
+      intakeBasket(100);
     }
     else if (Controller.ButtonR2.pressing())
     {
-      // LI.spin(reverse, 100, pct);
-      // UI.spin(reverse, 100, pct);
-      Intake.spin(reverse, 100, pct);
-      middleRoller.spin(reverse, 100, pct);
+      outtake(100);
     }
-    // else if (Controller.ButtonL1.pressing())
-    // {
-    //   LI.spin(fwd, 67, pct);
-    //   UI.spin(reverse, 67, pct);
-    // }
+    else if (Controller.ButtonL1.pressing())
+    {
+      if(sdiybt){
+        scoreHigh(100);
+      }
+      if(sdiybt){
+        scoreMiddle(100);
+      }
+    }
     else
     {
-      // UI.spin(fwd, 10, pct);
-      // if (!sdiybt)
-      // {
-      //   UI.stop(brake);
-      //   LI.stop(brake);
-      // }
-      Intake.stop();
-      middleRoller.stop();
+      stopIntake();
     }
 
     // tounge controlls
