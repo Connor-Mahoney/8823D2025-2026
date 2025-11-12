@@ -16,14 +16,17 @@ using namespace vex;
 competition Competition;
 brain Brain;
 controller Controller;
-motor LF = motor(vex::PORT11, gearSetting::ratio6_1, true);
-motor LM = motor(vex::PORT15, gearSetting::ratio6_1, true);
-motor LR = motor(vex::PORT19, gearSetting::ratio6_1, true);
-motor RF = motor(vex::PORT1, gearSetting::ratio6_1, false);
-motor RM = motor(vex::PORT18, gearSetting::ratio6_1, false);
-motor RR = motor(vex::PORT17, gearSetting::ratio6_1, false);
+motor LF = motor(vex::PORT15, gearSetting::ratio6_1, true);
+motor LM = motor(vex::PORT14, gearSetting::ratio6_1, false);
+motor LR = motor(vex::PORT13, gearSetting::ratio6_1, true);
+motor RF = motor(vex::PORT18, gearSetting::ratio6_1, false);
+motor RM = motor(vex::PORT17, gearSetting::ratio6_1, true);
+motor RR = motor(vex::PORT16, gearSetting::ratio6_1, false);
 motor LI = motor(vex::PORT3, gearSetting::ratio6_1, false);
 motor UI = motor(vex::PORT4, gearSetting::ratio6_1, false);
+motor Intake = motor(vex::PORT20, gearSetting::ratio6_1, false);
+motor middleRoller = motor(vex::PORT11, gearSetting::ratio18_1, false);
+motor topRoller = motor(vex::PORT1, gearSetting::ratio18_1, false);
 digital_out tounge = digital_out(Brain.ThreeWirePort.H);
 digital_out toungeR = digital_out(Brain.ThreeWirePort.A);
 inertial Inertial1 = inertial(vex::PORT16);
@@ -196,34 +199,40 @@ void usercontrol(void)
     // intake controlls
     Controller.ButtonR1.pressed(toggle_intake);
     Controller.ButtonR2.pressed(toggle_intake2);
-    if (sdiybt)
-    {
-      LI.spin(fwd, 25, pct);
-      UI.spin(fwd, 15, pct);
-    }
+    // if (sdiybt)
+    // {
+    //   LI.spin(fwd, 25, pct);
+    //   UI.spin(fwd, 15, pct);
+    // }
     if (Controller.ButtonR1.pressing())
     {
-      LI.spin(fwd, 100, pct);
-      UI.spin(fwd, 100, pct);
+      // LI.spin(fwd, 100, pct);
+      // UI.spin(fwd, 100, pct);
+      Intake.spin(fwd, 100, pct);
+      middleRoller.spin(fwd, 100, pct);
     }
     else if (Controller.ButtonR2.pressing())
     {
-      LI.spin(reverse, 100, pct);
-      UI.spin(reverse, 100, pct);
+      // LI.spin(reverse, 100, pct);
+      // UI.spin(reverse, 100, pct);
+      Intake.spin(reverse, 100, pct);
+      middleRoller.spin(reverse, 100, pct);
     }
-    else if (Controller.ButtonL1.pressing())
-    {
-      LI.spin(fwd, 67, pct);
-      UI.spin(reverse, 67, pct);
-    }
+    // else if (Controller.ButtonL1.pressing())
+    // {
+    //   LI.spin(fwd, 67, pct);
+    //   UI.spin(reverse, 67, pct);
+    // }
     else
     {
-      UI.spin(fwd, 10, pct);
-      if (!sdiybt)
-      {
-        UI.stop(brake);
-        LI.stop(brake);
-      }
+      // UI.spin(fwd, 10, pct);
+      // if (!sdiybt)
+      // {
+      //   UI.stop(brake);
+      //   LI.stop(brake);
+      // }
+      Intake.stop();
+      middleRoller.stop();
     }
 
     // tounge controlls
