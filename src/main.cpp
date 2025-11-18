@@ -46,6 +46,7 @@ inertial Inertial2 = inertial(vex::PORT9);
 
 bool baleft;
 bool balright;
+bool evan = 0;
 
 void pre_auton(void)
 {
@@ -96,13 +97,16 @@ void autonomous(void)
   if (balright)
   {
     thread([]()
-           {
-             LI.spin(fwd, 30, pct);
-             UI.spin(fwd, 30, pct);
-             wait(2, sec);
-             LI.stop();
-             UI.stop();
-           })
+   {
+            //  LI.spin(fwd, 30, pct);
+            //  UI.spin(fwd, 30, pct);
+            //  wait(2, sec);
+            //  LI.stop();
+            //  UI.stop();
+    intakeBasket(100);
+    wait(3, sec);
+    stopIntake();
+   })
         .detach();
     drive(27, 20);
     wait(50, msec);
@@ -124,11 +128,13 @@ void autonomous(void)
     wait(0.5, sec);
     thread([]()
     {
-      LI.spin(fwd, 30, pct);
-      UI.spin(fwd, 30, pct);
+      // LI.spin(fwd, 30, pct);
+      // UI.spin(fwd, 30, pct);
+      intakeBasket(100);
       wait(3, sec);
-      LI.stop();
-      UI.stop();
+      stopIntake();
+      // LI.stop();
+      // UI.stop();
     })
     .detach();
     drive(8.5, 50);
@@ -158,7 +164,9 @@ void a()
   Controller.Screen.clearScreen();
   Controller.Screen.setCursor(1, 1);
   Controller.Screen.print("left auto selected");
+  evan = 1;
 }
+
 void b()
 {
   baleft = 0;
@@ -166,6 +174,7 @@ void b()
   Controller.Screen.clearScreen();
   Controller.Screen.setCursor(1, 1);
   Controller.Screen.print("right auto selected");
+  evan = 1;
 }
 void toggle_tounge()
 {
@@ -209,10 +218,16 @@ void usercontrol(void)
   // User control code here, inside the loop
   while (1)
   {
-    Controller.ButtonA.pressed(a);
-    Controller.ButtonB.pressed(b);
-    Controller.ButtonX.pressed(toggle_intake);
+    if(!evan){
+      Controller.ButtonA.pressed(a);
+      Controller.ButtonB.pressed(b);
+    }
+    if(evan){
+      Controller.ButtonX.pressed(toggle_intake);
 
+    }
+    
+    
     LF.spin(fwd, Controller.Axis3.value() + Controller.Axis1.value() * .5067, pct);
     LM.spin(fwd, Controller.Axis3.value() + Controller.Axis1.value() * .5067, pct);
     LR.spin(fwd, Controller.Axis3.value() + Controller.Axis1.value() * .5067, pct);
@@ -230,13 +245,13 @@ void usercontrol(void)
     // intake controlls
     
     if(sdiybt){
-      Controller.Screen.setCursor(3, 1);
+      Controller.Screen.setCursor(2, 1);
       Controller.Screen.clearLine();
       Controller.Screen.print("score top goal");
     }
 
     if(!sdiybt){
-      Controller.Screen.setCursor(3, 1);
+      Controller.Screen.setCursor(2, 1);
       Controller.Screen.clearLine();
       Controller.Screen.print("score middle goal");
     }
