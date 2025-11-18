@@ -105,7 +105,7 @@ void turn(float degrees)
 
     
     do{
-        float inertial_average = (Inertial2.rotation(vex::deg) + Inertial2.rotation(vex::deg)) / 2;
+        float inertial_average = (Inertial1.rotation(vex::deg) + Inertial2.rotation(vex::deg)) / 2;
         printf("inertial 1 = %f\n", Inertial1.rotation(vex::deg));
         printf("inertial 2 = %f\n", Inertial2.rotation(vex::deg));
         //printf("inertial_average = %f\n", inertial_average);
