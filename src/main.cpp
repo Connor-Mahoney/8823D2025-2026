@@ -110,7 +110,7 @@ void autonomous(void)
         .detach();
     drive(27, 20);
     wait(50, msec);
-    turn(-75);
+    turn(-77);
     wait(50, msec);
     drive(16, 20);
     wait(50, msec);
@@ -120,9 +120,10 @@ void autonomous(void)
     LI.stop();
     UI.stop();
     wait(0.5, sec);
-    drive(-49, 50);
+    turn(-5);
+    drive(-45, 50);
     wait(50, msec);
-    turn(-138);
+    turn(-132);
     tounge.set(true);
     toungeR.set(true);
     wait(0.5, sec);
@@ -135,13 +136,18 @@ void autonomous(void)
       stopIntake();
       // LI.stop();
       // UI.stop();
+      LI.spin(fwd, 40, pct);
+      UI.spin(fwd, 40, pct);
+      wait(4, sec);
+      LI.stop();
+      UI.stop();
     })
     .detach();
-    drive(8.5, 50);
+    drive(18, 55);
     wait(1, sec);
     drive(-3, 50);
-    // turn(5);
-    drive(-25, 50);
+     turn(1);
+    drive(-24, 50);
     LI.spin(fwd, 100, pct);
     UI.spin(fwd, 100, pct);
   }
