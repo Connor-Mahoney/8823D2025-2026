@@ -16,21 +16,28 @@ using namespace vex;
 competition Competition;
 brain Brain;
 controller Controller;
+
 motor LF = motor(vex::PORT15, gearSetting::ratio6_1, true);
-motor LM = motor(vex::PORT14, gearSetting::ratio6_1, false);
-motor LR = motor(vex::PORT13, gearSetting::ratio6_1, true);
+motor LM = motor(vex::PORT13, gearSetting::ratio6_1, false);
+motor LR = motor(vex::PORT14, gearSetting::ratio6_1, true);
 motor RF = motor(vex::PORT18, gearSetting::ratio6_1, false);
 motor RM = motor(vex::PORT17, gearSetting::ratio6_1, true);
 motor RR = motor(vex::PORT16, gearSetting::ratio6_1, false);
-motor LI = motor(vex::PORT3, gearSetting::ratio6_1, false);
-motor UI = motor(vex::PORT4, gearSetting::ratio6_1, false);
+
+
 motor Intake = motor(vex::PORT20, gearSetting::ratio6_1, false);
-motor middleRoller = motor(vex::PORT11, gearSetting::ratio18_1, false);
+motor middleRoller = motor(vex::PORT11, gearSetting::ratio18_1, true);
 motor topRoller = motor(vex::PORT1, gearSetting::ratio18_1, false);
+
 digital_out tounge = digital_out(Brain.ThreeWirePort.H);
 digital_out toungeR = digital_out(Brain.ThreeWirePort.A);
 inertial Inertial1 = inertial(vex::PORT16);
 inertial Inertial2 = inertial(vex::PORT9);
+
+rotation leftRotation = rotation(vex::PORT21);
+rotation rightRotation = rotation(vex::PORT19);
+
+
 
 // define your global instances of motors and other devices here
 
@@ -97,28 +104,20 @@ void autonomous(void)
   if (balright)
   {
     thread([]()
-   {
-            //  LI.spin(fwd, 30, pct);
-            //  UI.spin(fwd, 30, pct);
-            //  wait(2, sec);
-            //  LI.stop();
-            //  UI.stop();
-    intakeBasket(100);
-    wait(3, sec);
-    stopIntake();
-   })
-        .detach();
+    {
+      intakeBasket(100);
+      wait(2, sec);
+      stopIntake();       
+    }).detach();
     drive(27, 20);
     wait(50, msec);
     turn(-77);
     wait(50, msec);
     drive(16, 20);
     wait(50, msec);
-    LI.spin(reverse, 75, pct);
-    UI.spin(reverse, 75, pct);
+    outtake(100);
     wait(1.5, sec);
-    LI.stop();
-    UI.stop();
+    stopIntake();
     wait(0.5, sec);
     turn(-5);
     drive(-45, 50);
@@ -129,18 +128,10 @@ void autonomous(void)
     wait(0.5, sec);
     thread([]()
     {
-      // LI.spin(fwd, 30, pct);
-      // UI.spin(fwd, 30, pct);
       intakeBasket(100);
-      wait(3, sec);
-      stopIntake();
-      // LI.stop();
-      // UI.stop();
-      LI.spin(fwd, 40, pct);
-      UI.spin(fwd, 40, pct);
       wait(4, sec);
-      LI.stop();
-      UI.stop();
+      stopIntake();
+      
     })
     .detach();
     drive(18, 55);
@@ -148,8 +139,7 @@ void autonomous(void)
     drive(-3, 50);
      turn(1);
     drive(-24, 50);
-    LI.spin(fwd, 100, pct);
-    UI.spin(fwd, 100, pct);
+    scoreHigh(100);
   }
 }
 
@@ -194,7 +184,7 @@ void intakeBasket(float speed){
 }
 void outtake(float speed){
   Intake.spin(reverse, speed, pct);
-  middleRoller.spin(reverse);
+  middleRoller.spin(reverse, speed, pct);
   topRoller.spin(reverse, speed, pct);
 }
 void scoreHigh(float speed){
@@ -216,6 +206,18 @@ void stopIntake(){
 void toggle_intake()
 {
   sdiybt = 1 - sdiybt;
+  printf("sdiybt = %d\n", sdiybt);
+  if(!sdiybt){
+      Controller.Screen.setCursor(3, 1);
+      Controller.Screen.clearLine();
+      Controller.Screen.print("score top goal");
+    }
+
+      if(sdiybt){
+      Controller.Screen.setCursor(3, 1);
+      Controller.Screen.clearLine();
+      Controller.Screen.print("score middle goal");
+    }
 }
 
 // giughiuhi
@@ -224,14 +226,21 @@ void usercontrol(void)
   // User control code here, inside the loop
   while (1)
   {
-    if(!evan){
-      Controller.ButtonA.pressed(a);
+      if(!evan){
+        Controller.ButtonA.pressed(a);
       Controller.ButtonB.pressed(b);
-    }
-    if(evan){
-      Controller.ButtonX.pressed(toggle_intake);
+      }
+      
+    
+Controller.ButtonY.pressed(toggle_intake);
+    
+    
+    
+     
+  
 
-    }
+    
+     
     
     
     LF.spin(fwd, Controller.Axis3.value() + Controller.Axis1.value() * .5067, pct);
@@ -250,17 +259,7 @@ void usercontrol(void)
 
     // intake controlls
     
-    if(sdiybt){
-      Controller.Screen.setCursor(2, 1);
-      Controller.Screen.clearLine();
-      Controller.Screen.print("score top goal");
-    }
-
-    if(!sdiybt){
-      Controller.Screen.setCursor(2, 1);
-      Controller.Screen.clearLine();
-      Controller.Screen.print("score middle goal");
-    }
+    
 
     if (Controller.ButtonR1.pressing())
     {
@@ -277,7 +276,7 @@ void usercontrol(void)
       if(sdiybt){
         scoreHigh(100);
       }
-      if(sdiybt){
+      if(!sdiybt){
         scoreMiddle(100);
       }
     }

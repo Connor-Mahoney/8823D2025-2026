@@ -12,6 +12,8 @@ extern motor LI;
 extern motor UI;
 extern inertial Inertial1;
 extern inertial Inertial2;
+extern rotation leftRotation;
+extern rotation rightRotation;
 //extern vex::rotation Rotation;
 void spin_motorsT(float speed)
 {
@@ -52,7 +54,7 @@ void stop_motors()
 }
 void drive(float inches, float speed)
 {
-    float degPerRotation = (360 / (M_PI * 3.25)) * (4.0 / 3.0);
+    float degPerRotation = (360 / (M_PI * 3.25)); //* (4.0 / 3.0);
     printf("deg per rotation: %f\n", degPerRotation);
     float targetRotation = inches * degPerRotation;
     printf("target rotation: %f\n", targetRotation);
@@ -67,7 +69,7 @@ void drive(float inches, float speed)
     float prev_error;
     do
     {
-        float wheel_posisition = (LF.position(vex::deg) + RF.position(vex::deg)) / 2;
+        float wheel_posisition = (RF.position(vex::deg) + LF.position(vex::deg)) / 2;
         printf("wheel_posistion: %f\n", wheel_posisition);
 
         
