@@ -54,7 +54,7 @@ void stop_motors()
 }
 void drive(float inches, float speed)
 {
-    float degPerRotation = (360 / (M_PI * 3.25)); //* (4.0 / 3.0);
+    float degPerRotation = (360 / (M_PI * 3.25)) * (4.0 / 3.0);
     printf("deg per rotation: %f\n", degPerRotation);
     float targetRotation = inches * degPerRotation;
     printf("target rotation: %f\n", targetRotation);
@@ -179,42 +179,7 @@ void arcTurn(float radius, float angle, bool direction, float speed){
        
        leftSide(leftOutput);
        rightSide(rightOutput);
-    }while(fabs(leftError) && fabs(rightError));
-
-    // float degPerRotation = (360 / (M_PI * 3.25)) * (3.0 / 4.0);
-    // printf("deg per rotation: %f\n", degPerRotation);
-    // float targetRotation = distance * degPerRotation;
-    // printf("target rotation: %f\n", targetRotation);
-    // LF.resetPosition();
-    // RF.resetPosition();
-    // /*
-    // LF.spinFor(forward, a * 360, deg, speed, velocityUnits::pct);
-    // LM.spinFor(forward, a * 360, deg, speed, velocityUnits::pct);
-    // LR.spinFor(forward, a * 360, deg, speed, velocityUnits::pct);
-    // RF.spinFor(forward, a * 360, deg, speed, velocityUnits::pct);
-    // RM.spinFor(forward, a * 360, deg, speed, velocityUnits::pct);
-    // RF.spinFor(forward, a * 360, deg, speed, velocityUnits::pct); */
-    // float kp = 0.12;
-    // // float ki = 0.01;
-    // float error;
-    // // float sum_error;
-    // // float prev_error;
-    // do
-    // {
-    //     float wheel_posisition = (LF.position(vex::deg) + RF.position(vex::deg)) / 2;
-    //     printf("wheel_posistion: %f\n", wheel_posisition);
-    //     error = targetRotation - wheel_posisition;
-    //      printf("error: %f\n", error);
-    //     // sum_error = prev_error + error;
-    //     float output = kp * error; //+ ki * sum_error;
-    //     if(output > speed) output = speed;
-    //     if(output < -speed) output = -speed;
-    //     leftSide(output * left);  
-    //     rightSide(output * right); 
-    //     // prev_error = error;
-    // } while (fabs(error) > 1.7);
-    // stop_motors();
-    
+    }while(fabs(leftError) > 1 && fabs(rightError) > 1);
     
 
 }

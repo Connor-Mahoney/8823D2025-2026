@@ -26,13 +26,13 @@ motor RR = motor(vex::PORT16, gearSetting::ratio6_1, false);
 
 
 motor Intake = motor(vex::PORT20, gearSetting::ratio6_1, false);
-motor middleRoller = motor(vex::PORT11, gearSetting::ratio18_1, true);
-motor topRoller = motor(vex::PORT1, gearSetting::ratio18_1, false);
+motor middleRoller = motor(vex::PORT11, gearSetting::ratio18_1, false);
+motor topRoller = motor(vex::PORT1, gearSetting::ratio18_1, true);
 
 digital_out tounge = digital_out(Brain.ThreeWirePort.H);
-digital_out toungeR = digital_out(Brain.ThreeWirePort.A);
-inertial Inertial1 = inertial(vex::PORT16);
-inertial Inertial2 = inertial(vex::PORT9);
+digital_out basket = digital_out(Brain.ThreeWirePort.A);
+inertial Inertial1 = inertial(vex::PORT12);
+inertial Inertial2 = inertial(vex::PORT3);
 
 rotation leftRotation = rotation(vex::PORT21);
 rotation rightRotation = rotation(vex::PORT19);
@@ -53,6 +53,7 @@ rotation rightRotation = rotation(vex::PORT19);
 
 bool baleft;
 bool balright;
+bool fin;
 bool evan = 0;
 
 void pre_auton(void)
@@ -77,6 +78,8 @@ void pre_auton(void)
   Controller.Screen.print("a = left\n");
   Controller.Screen.setCursor(2, 1);
   Controller.Screen.print("b = right\n");
+  Controller.Screen.setCursor(3, 1);
+  Controller.Screen.print("x = skills");
 }
 
 /*---------------------------------------------------------------------------*/
@@ -98,48 +101,57 @@ void stopIntake();
 
 void autonomous(void)
 {
+  
   if (baleft)
   {
+    drive(5,30);
+    wait(15, sec);
+
   }
   if (balright)
   {
     thread([]()
     {
-      intakeBasket(100);
-      wait(2, sec);
+      intakeBasket(50);
+      wait(2.5, sec);
       stopIntake();       
     }).detach();
-    drive(27, 20);
+    drive(27, 30);
     wait(50, msec);
-    turn(-77);
+    turn(-74);
     wait(50, msec);
     drive(16, 20);
     wait(50, msec);
     outtake(100);
-    wait(1.5, sec);
+    wait(2, sec);
     stopIntake();
     wait(0.5, sec);
-    turn(-5);
-    drive(-45, 50);
+    // turn(-5);
+    drive(-52, 50);
     wait(50, msec);
-    turn(-132);
+    turn(-136);
     tounge.set(true);
-    toungeR.set(true);
     wait(0.5, sec);
     thread([]()
     {
       intakeBasket(100);
-      wait(4, sec);
+      wait(2, sec);
       stopIntake();
       
     })
     .detach();
-    drive(18, 55);
+    drive(20, 55);
     wait(1, sec);
     drive(-3, 50);
-     turn(1);
+     turn(3);
     drive(-24, 50);
     scoreHigh(100);
+  }
+  if(fin){
+    // tounge.set(true);
+    // toungeR.set(true);
+    // drive(50, 100);
+    drive(-10, 100);
   }
 }
 
@@ -172,15 +184,25 @@ void b()
   Controller.Screen.print("right auto selected");
   evan = 1;
 }
+void x()
+{
+  baleft = 0;
+  balright = 0;
+  fin = 1;
+  Controller.Screen.clearScreen();
+  Controller.Screen.setCursor(1, 1);
+  Controller.Screen.print("skills auto selected");
+  evan = 1;
+}
 void toggle_tounge()
 {
   tounge.set(!tounge.value());
-  toungeR.set(!tounge.value());
 }
 void intakeBasket(float speed){
   Intake.spin(fwd, speed, pct);
   middleRoller.spin(fwd, speed, pct);
   topRoller.spin(fwd, speed, pct);
+  
 }
 void outtake(float speed){
   Intake.spin(reverse, speed, pct);
@@ -191,12 +213,14 @@ void scoreHigh(float speed){
   Intake.spin(fwd, speed, pct);
   middleRoller.spin(fwd, speed, pct);
   topRoller.spin(reverse, speed, pct);
+  
 
 }
 void scoreMiddle(float speed){
   Intake.spin(fwd, speed, pct);
   middleRoller.spin(reverse, speed, pct);
   topRoller.spin(fwd, speed, pct);
+  
 }
 void stopIntake(){
   Intake.stop();
@@ -209,14 +233,14 @@ void toggle_intake()
   printf("sdiybt = %d\n", sdiybt);
   if(!sdiybt){
       Controller.Screen.setCursor(3, 1);
-      Controller.Screen.clearLine();
-      Controller.Screen.print("score top goal");
+      Controller.Screen.clearScreen();
+      Controller.Screen.print("score middle goal");
     }
 
       if(sdiybt){
+      Controller.Screen.clearScreen();
       Controller.Screen.setCursor(3, 1);
-      Controller.Screen.clearLine();
-      Controller.Screen.print("score middle goal");
+      Controller.Screen.print("score top goal");
     }
 }
 
@@ -229,6 +253,7 @@ void usercontrol(void)
       if(!evan){
         Controller.ButtonA.pressed(a);
       Controller.ButtonB.pressed(b);
+      Controller.ButtonX.pressed(x);
       }
       
     
@@ -265,6 +290,7 @@ Controller.ButtonY.pressed(toggle_intake);
     {
       // LI.spin(fwd, 100, pct);
       // UI.spin(fwd, 100, pct);
+      basket.set(true);
       intakeBasket(100);
     }
     else if (Controller.ButtonR2.pressing())
@@ -273,6 +299,7 @@ Controller.ButtonY.pressed(toggle_intake);
     }
     else if (Controller.ButtonL1.pressing())
     {
+      basket.set(false);
       if(sdiybt){
         scoreHigh(100);
       }
