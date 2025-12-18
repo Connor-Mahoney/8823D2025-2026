@@ -31,6 +31,7 @@ motor topRoller = motor(vex::PORT1, gearSetting::ratio18_1, true);
 
 digital_out tounge = digital_out(Brain.ThreeWirePort.H);
 digital_out basket = digital_out(Brain.ThreeWirePort.A);
+digital_out wing = digital_out(Brain.ThreeWirePort.E);
 inertial Inertial1 = inertial(vex::PORT12);
 inertial Inertial2 = inertial(vex::PORT3);
 
@@ -112,22 +113,23 @@ void autonomous(void)
   {
     thread([]()
     {
-      intakeBasket(50);
-      wait(2.5, sec);
+      // outtake(25);
+      // wait(1, sec);
+      intakeBasket(100);
+      wait(2, sec);
       stopIntake();       
     }).detach();
-    drive(27, 30);
+    drive(28, 50);
     wait(50, msec);
     turn(-74);
     wait(50, msec);
-    drive(16, 20);
+    drive(16, 30);
     wait(50, msec);
     outtake(100);
     wait(2, sec);
-    stopIntake();
-    wait(0.5, sec);
     // turn(-5);
-    drive(-52, 50);
+    drive(-55, 50);
+    stopIntake();
     wait(50, msec);
     turn(-136);
     tounge.set(true);
@@ -136,16 +138,16 @@ void autonomous(void)
     {
       intakeBasket(100);
       wait(2, sec);
-      stopIntake();
+      scoreHigh(100);
       
     })
     .detach();
-    drive(20, 55);
+    drive(13, 55);
     wait(1, sec);
     drive(-3, 50);
      turn(3);
     drive(-24, 50);
-    scoreHigh(100);
+    // scoreHigh(100);
   }
   if(fin){
     // tounge.set(true);
@@ -198,7 +200,12 @@ void toggle_tounge()
 {
   tounge.set(!tounge.value());
 }
+void toggle_wing(){
+  wing.set(!wing.value());
+}
 void intakeBasket(float speed){
+  basket.set(true);
+  wing.set(true);
   Intake.spin(fwd, speed, pct);
   middleRoller.spin(fwd, speed, pct);
   topRoller.spin(fwd, speed, pct);
@@ -210,6 +217,8 @@ void outtake(float speed){
   topRoller.spin(reverse, speed, pct);
 }
 void scoreHigh(float speed){
+  basket.set(false);
+  wing.set(false);
   Intake.spin(fwd, speed, pct);
   middleRoller.spin(fwd, speed, pct);
   topRoller.spin(reverse, speed, pct);
@@ -217,6 +226,8 @@ void scoreHigh(float speed){
 
 }
 void scoreMiddle(float speed){
+  wing.set(false);
+  basket.set(false);
   Intake.spin(fwd, speed, pct);
   middleRoller.spin(reverse, speed, pct);
   topRoller.spin(fwd, speed, pct);
@@ -255,6 +266,7 @@ void usercontrol(void)
       Controller.ButtonB.pressed(b);
       Controller.ButtonX.pressed(x);
       }
+      Controller.ButtonRight.pressed(toggle_wing);
       
     
 Controller.ButtonY.pressed(toggle_intake);
@@ -290,7 +302,6 @@ Controller.ButtonY.pressed(toggle_intake);
     {
       // LI.spin(fwd, 100, pct);
       // UI.spin(fwd, 100, pct);
-      basket.set(true);
       intakeBasket(100);
     }
     else if (Controller.ButtonR2.pressing())
@@ -299,7 +310,6 @@ Controller.ButtonY.pressed(toggle_intake);
     }
     else if (Controller.ButtonL1.pressing())
     {
-      basket.set(false);
       if(sdiybt){
         scoreHigh(100);
       }
