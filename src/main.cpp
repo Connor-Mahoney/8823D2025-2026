@@ -61,26 +61,26 @@ void pre_auton(void)
 {
 
   Inertial1.calibrate();
-//   while (Inertial1.isCalibrating())
-//   {
-//     Brain.Screen.clearScreen();
-//     Brain.Screen.print("inertial 1 calibrating\n");
-//     wait(50, msec);
-//   }
-//   Inertial2.calibrate();
-//   while (Inertial2.isCalibrating())
-//   {
-//     Brain.Screen.clearScreen();
-//     Brain.Screen.print("inertial 2 calibrating\n");
-//     wait(50, msec);
-//   }
-//   Controller.Screen.clearScreen();
-//   Controller.Screen.setCursor(1, 1);
-//   Controller.Screen.print("a = left\n");
-//   Controller.Screen.setCursor(2, 1);
-//   Controller.Screen.print("b = right\n");
-//   Controller.Screen.setCursor(3, 1);
-//   Controller.Screen.print("x = skills");
+  while (Inertial1.isCalibrating())
+  {
+    Brain.Screen.clearScreen();
+    Brain.Screen.print("inertial 1 calibrating\n");
+    wait(50, msec);
+  }
+  Inertial2.calibrate();
+  while (Inertial2.isCalibrating())
+  {
+    Brain.Screen.clearScreen();
+    Brain.Screen.print("inertial 2 calibrating\n");
+    wait(50, msec);
+  }
+  Controller.Screen.clearScreen();
+  Controller.Screen.setCursor(1, 1);
+  Controller.Screen.print("a = left\n");
+  Controller.Screen.setCursor(2, 1);
+  Controller.Screen.print("b = right\n");
+  Controller.Screen.setCursor(3, 1);
+  Controller.Screen.print("x = skills");
  }
 
 /*---------------------------------------------------------------------------*/
@@ -107,8 +107,6 @@ void autonomous(void)
   {
     thread([]()
     {
-      // outtake(25);
-      // wait(1, sec);
       intakeBasket(100);
       wait(2.25, sec);
       stopIntake();       
@@ -150,8 +148,6 @@ void autonomous(void)
   {
     thread([]()
     {
-      // outtake(25);
-      // wait(1, sec);
       intakeBasket(100);
       wait(2.25, sec);
       stopIntake();       
@@ -235,9 +231,9 @@ void x()
   baleft = 0;
   balright = 0;
   fin = 1;
-  // Controller.Screen.clearScreen();
-  // Controller.Screen.setCursor(1, 1);
-  // Controller.Screen.print("skills auto selected");
+  Controller.Screen.clearScreen();
+  Controller.Screen.setCursor(1, 1);
+  Controller.Screen.print("skills auto selected");
   evan = 1;
 }
 void toggle_tounge()
@@ -287,15 +283,15 @@ void toggle_intake()
   sdiybt = 1 - sdiybt;
   printf("sdiybt = %d\n", sdiybt);
   if(!sdiybt){
-      // Controller.Screen.setCursor(3, 1);
-      // Controller.Screen.clearScreen();
-      // Controller.Screen.print("score middle goal");
+      Controller.Screen.setCursor(3, 1);
+      Controller.Screen.clearScreen();
+      Controller.Screen.print("score middle goal");
     }
 
       if(sdiybt){
-      // Controller.Screen.clearScreen();
-      // Controller.Screen.setCursor(3, 1);
-      // Controller.Screen.print("score top goal");
+      Controller.Screen.clearScreen();
+      Controller.Screen.setCursor(3, 1);
+      Controller.Screen.print("score top goal");
     }
 }
 
@@ -344,8 +340,6 @@ Controller.ButtonY.pressed(toggle_intake);
 
     if (Controller.ButtonR1.pressing())
     {
-      // LI.spin(fwd, 100, pct);
-      // UI.spin(fwd, 100, pct);
       intakeBasket(100);
     }
     else if (Controller.ButtonR2.pressing())
