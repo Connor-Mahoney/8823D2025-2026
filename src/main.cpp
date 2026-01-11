@@ -25,7 +25,7 @@ motor RM = motor(vex::PORT17, gearSetting::ratio6_1, true);
 motor RR = motor(vex::PORT16, gearSetting::ratio6_1, false);
 
 
-motor Intake = motor(vex::PORT20, gearSetting::ratio6_1, false);
+motor Intake = motor(vex::PORT20, gearSetting::ratio6_1, true);
 motor middleRoller = motor(vex::PORT11, gearSetting::ratio18_1, false);
 motor topRoller = motor(vex::PORT1, gearSetting::ratio18_1, true);
 
@@ -61,27 +61,27 @@ void pre_auton(void)
 {
 
   Inertial1.calibrate();
-  while (Inertial1.isCalibrating())
-  {
-    Brain.Screen.clearScreen();
-    Brain.Screen.print("inertial 1 calibrating\n");
-    wait(50, msec);
-  }
-  Inertial2.calibrate();
-  while (Inertial2.isCalibrating())
-  {
-    Brain.Screen.clearScreen();
-    Brain.Screen.print("inertial 2 calibrating\n");
-    wait(50, msec);
-  }
-  Controller.Screen.clearScreen();
-  Controller.Screen.setCursor(1, 1);
-  Controller.Screen.print("a = left\n");
-  Controller.Screen.setCursor(2, 1);
-  Controller.Screen.print("b = right\n");
-  Controller.Screen.setCursor(3, 1);
-  Controller.Screen.print("x = skills");
-}
+//   while (Inertial1.isCalibrating())
+//   {
+//     Brain.Screen.clearScreen();
+//     Brain.Screen.print("inertial 1 calibrating\n");
+//     wait(50, msec);
+//   }
+//   Inertial2.calibrate();
+//   while (Inertial2.isCalibrating())
+//   {
+//     Brain.Screen.clearScreen();
+//     Brain.Screen.print("inertial 2 calibrating\n");
+//     wait(50, msec);
+//   }
+//   Controller.Screen.clearScreen();
+//   Controller.Screen.setCursor(1, 1);
+//   Controller.Screen.print("a = left\n");
+//   Controller.Screen.setCursor(2, 1);
+//   Controller.Screen.print("b = right\n");
+//   Controller.Screen.setCursor(3, 1);
+//   Controller.Screen.print("x = skills");
+ }
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
@@ -105,8 +105,45 @@ void autonomous(void)
   
   if (baleft)
   {
-    drive(5,30);
-    wait(15, sec);
+    thread([]()
+    {
+      // outtake(25);
+      // wait(1, sec);
+      intakeBasket(100);
+      wait(2.25, sec);
+      stopIntake();       
+    }).detach();
+    drive(28, 50);//pick up
+    wait(50, msec);
+    turn(-105);
+    wait(50, msec);
+    drive(-14, 30);//drive to goal
+    wait(50, msec);
+    scoreMiddle(100);
+    wait(5, sec);
+    // turn(2);
+    drive(52, 50);//drive away from goal
+    stopIntake();
+    wait(50, msec);
+    turn(-45);
+    tounge.set(true);
+    
+    printf("tounge value = %s\n", tounge.value()? "true":"false");
+    wait(0.5, sec);
+    thread([]()
+    {
+      intakeBasket(100);
+      wait(2, sec);
+      scoreHigh(100);
+      printf("tounge value = %s\n", tounge.value()? "true":"false");
+    })
+    .detach();
+     drive(13, 25);
+    wait(1, sec);
+     drive(-3, 50);
+    //  turn(3);
+     drive(-24, 50);
+    // // scoreHigh(100);
 
   }
   if (balright)
@@ -116,44 +153,51 @@ void autonomous(void)
       // outtake(25);
       // wait(1, sec);
       intakeBasket(100);
-      wait(2, sec);
+      wait(2.25, sec);
       stopIntake();       
     }).detach();
-    drive(28, 50);
+    drive(28, 50);//pick up
     wait(50, msec);
-    turn(-74);
+    turn(-69);
     wait(50, msec);
-    drive(16, 30);
+    drive(15, 30);//drive to goal
     wait(50, msec);
     outtake(100);
     wait(2, sec);
-    // turn(-5);
-    drive(-55, 50);
+    // turn(2);
+    drive(-55, 50);//drive away from goal
     stopIntake();
     wait(50, msec);
-    turn(-136);
+    turn(-134);
     tounge.set(true);
+    
+    printf("tounge value = %s\n", tounge.value()? "true":"false");
     wait(0.5, sec);
     thread([]()
     {
       intakeBasket(100);
       wait(2, sec);
       scoreHigh(100);
-      
+      printf("tounge value = %s\n", tounge.value()? "true":"false");
     })
     .detach();
-    drive(13, 55);
+     drive(13, 25);
     wait(1, sec);
-    drive(-3, 50);
-     turn(3);
-    drive(-24, 50);
-    // scoreHigh(100);
+     drive(-3, 50);
+    //  turn(3);
+     drive(-24, 50);
+    // // scoreHigh(100);
   }
   if(fin){
+    // drive(29, 75);
+    // turn(-95);
     // tounge.set(true);
-    // toungeR.set(true);
-    // drive(50, 100);
+    // intakeBasket(100);
+    // wait(0.5, sec);
+    // drive(10, 30);
+    // wait(5, sec);
     drive(-10, 100);
+    
   }
 }
 
@@ -191,9 +235,9 @@ void x()
   baleft = 0;
   balright = 0;
   fin = 1;
-  Controller.Screen.clearScreen();
-  Controller.Screen.setCursor(1, 1);
-  Controller.Screen.print("skills auto selected");
+  // Controller.Screen.clearScreen();
+  // Controller.Screen.setCursor(1, 1);
+  // Controller.Screen.print("skills auto selected");
   evan = 1;
 }
 void toggle_tounge()
@@ -243,15 +287,15 @@ void toggle_intake()
   sdiybt = 1 - sdiybt;
   printf("sdiybt = %d\n", sdiybt);
   if(!sdiybt){
-      Controller.Screen.setCursor(3, 1);
-      Controller.Screen.clearScreen();
-      Controller.Screen.print("score middle goal");
+      // Controller.Screen.setCursor(3, 1);
+      // Controller.Screen.clearScreen();
+      // Controller.Screen.print("score middle goal");
     }
 
       if(sdiybt){
-      Controller.Screen.clearScreen();
-      Controller.Screen.setCursor(3, 1);
-      Controller.Screen.print("score top goal");
+      // Controller.Screen.clearScreen();
+      // Controller.Screen.setCursor(3, 1);
+      // Controller.Screen.print("score top goal");
     }
 }
 
@@ -280,12 +324,12 @@ Controller.ButtonY.pressed(toggle_intake);
      
     
     
-    LF.spin(fwd, Controller.Axis3.value() + Controller.Axis1.value() * .5067, pct);
-    LM.spin(fwd, Controller.Axis3.value() + Controller.Axis1.value() * .5067, pct);
-    LR.spin(fwd, Controller.Axis3.value() + Controller.Axis1.value() * .5067, pct);
-    RF.spin(fwd, Controller.Axis3.value() - Controller.Axis1.value() * .5067, pct);
-    RM.spin(fwd, Controller.Axis3.value() - Controller.Axis1.value() * .5067, pct);
-    RR.spin(fwd, Controller.Axis3.value() - Controller.Axis1.value() * .5067, pct);
+    LF.spin(fwd, Controller.Axis3.value() + Controller.Axis1.value() * .41, pct);
+    LM.spin(fwd, Controller.Axis3.value() + Controller.Axis1.value() * .41, pct);
+    LR.spin(fwd, Controller.Axis3.value() + Controller.Axis1.value() * .41, pct);
+    RF.spin(fwd, Controller.Axis3.value() - Controller.Axis1.value() * .41, pct);
+    RM.spin(fwd, Controller.Axis3.value() - Controller.Axis1.value() * .41, pct);
+    RR.spin(fwd, Controller.Axis3.value() - Controller.Axis1.value() * .41, pct);
 
     LF.setStopping(brake);
     LM.setStopping(brake);

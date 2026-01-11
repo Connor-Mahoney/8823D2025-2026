@@ -70,17 +70,17 @@ void drive(float inches, float speed)
     do
     {
         float wheel_posisition = (RF.position(vex::deg) + LF.position(vex::deg)) / 2;
-        printf("wheel_posistion: %f\n", wheel_posisition);
+        // printf("wheel_posistion: %f\n", wheel_posisition);
 
         
         
         
         error = targetRotation - wheel_posisition;
         
-         printf("error: %f\n", error);
+        //  printf("error: %f\n", error);
         sum_error = prev_error + error;
         float output = kp * error + ki * sum_error; 
-        printf("output: %f\n", output);
+        // printf("output: %f\n", output);
         if(output > speed) output = speed;
         if(output < -speed) output = -speed;
         spin_motorsF(output);   
@@ -112,7 +112,7 @@ void turn(float degrees)
         printf("inertial 2 = %f\n", Inertial2.rotation(vex::deg));
         //printf("inertial_average = %f\n", inertial_average);
         error = degrees - inertial_average;
-        //printf("error = %f\n", error);
+        printf("error = %f\n", error);
         sum_error = error + prev_error;
         float output = error * kp + sum_error * ki;
         if(output>30) output = 30;
