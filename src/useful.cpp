@@ -54,32 +54,40 @@ void stop_motors()
 }
 void drive(float inches, float speed)
 {
-    float degPerRotation = (360 / (M_PI * 3.25)) * (4.0 / 3.0);
-    printf("deg per rotation: %f\n", degPerRotation);
-    float targetRotation = inches * degPerRotation;
-    printf("target rotation: %f\n", targetRotation);
-    LF.resetPosition();
-    RF.resetPosition();
+    printf("STARTFYFKJMF\n");
+    float targetDegrees = (inches/(3.25*M_PI))*360;
+    printf("targetDegrees =%f\n", targetDegrees);
+    float posistion;
+    float output;
+    //  float targetRotation = inches * degPerRotation;
+    // printf("target rotation: %f\n", targetRotation);
     
-    float kp = 0.07;
-    float ki = 0.013;
+    float kp = 0.06;
+    float ki = 0.02;
+    float kd;
     float error;
-    
     float sum_error;
     float prev_error;
+    float dif_error;
+
+    rightRotation.resetPosition();
+    leftRotation.resetPosition();
+
     do
     {
-        float wheel_posisition = (RF.position(vex::deg) + LF.position(vex::deg)) / 2;
+        float wheelAverage = ((-1*rightRotation.position(vex::deg)) + leftRotation.position(vex::deg)) / 2;
+        printf("targetDegrees =%f\n", targetDegrees);
+        printf("right = %f\n", -1*rightRotation.position(vex::deg));
+        printf("left = %f\n", leftRotation.position(vex::deg));
         // printf("wheel_posistion: %f\n", wheel_posisition);
 
         
         
         
-        error = targetRotation - wheel_posisition;
-        
-        //  printf("error: %f\n", error);
-        sum_error = prev_error + error;
-        float output = kp * error + ki * sum_error; 
+         error = targetDegrees - wheelAverage;
+        printf("error = %f\n", error);
+        sum_error = (prev_error + error);
+        output = kp * error + ki * sum_error; 
         // printf("output: %f\n", output);
         if(output > speed) output = speed;
         if(output < -speed) output = -speed;
@@ -123,24 +131,28 @@ void turn(float degrees)
     }while (fabs(error) > 1);
     stop_motors();
 }
-void turn_heading(float degrees)
+void turnHeading(float degrees)
 {
     double kp = 1;
     float ki;
     //  flaot kd;
-    float inertial_Haverage = ((Inertial1.heading() + Inertial2.heading())/2);
+    float inertialH;
     float error = degrees;
     float sum_error;
     float prev_error;
 
-    while (fabs(error) > 1)
-    {
-        error = degrees - inertial_Haverage;
-        sum_error = prev_error + error;
-        float output = error * kp + sum_error * ki;
+     do{
+    
+        error = degrees - Inertial1.rotation(vex::deg);
+        printf("error = %f\n", error);
+        sum_error = error + prev_error;
+        float output = error * kp; //+ sum_error * ki;
+        if(output>30) output = 30;
+        if(output<-30) output = -30;
         spin_motorsT(output);
-        prev_error = error;
-    }
+         prev_error = error;
+
+    }while (fabs(error) > 1);
     stop_motors();
 }
 void arcTurn(float radius, float angle, bool direction, float speed){

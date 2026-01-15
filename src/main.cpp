@@ -108,19 +108,21 @@ void autonomous(void)
     thread([]()
     {
       intakeBasket(100);
-      wait(2.25, sec);
+      wait(2.75, sec);
       stopIntake();       
     }).detach();
     drive(28, 50);//pick up
     wait(50, msec);
     turn(-105);
     wait(50, msec);
-    drive(-14, 30);//drive to goal
+    drive(-10, 30);//drive to goal
     wait(50, msec);
+    outtake(100);
+    wait(1, sec);
     scoreMiddle(100);
     wait(5, sec);
     // turn(2);
-    drive(52, 50);//drive away from goal
+    drive(39, 50);//drive away from goal
     stopIntake();
     wait(50, msec);
     turn(-45);
@@ -136,7 +138,7 @@ void autonomous(void)
       printf("tounge value = %s\n", tounge.value()? "true":"false");
     })
     .detach();
-     drive(13, 25);
+     drive(20, 40);
     wait(1, sec);
      drive(-3, 50);
     //  turn(3);
@@ -192,7 +194,10 @@ void autonomous(void)
     // wait(0.5, sec);
     // drive(10, 30);
     // wait(5, sec);
-    drive(-10, 100);
+    Inertial1.setHeading(0, vex::deg);
+  turnHeading(90);
+  wait(3, sec);
+  turn(45);
     
   }
 }

@@ -10,3 +10,4 @@ void intakes(float time);
 void leftSide(float speed);
 void rightSide(float speed);
 void arcTurn(float distance, float left, float right, float speed);
+void turnHeading(float degrees);
